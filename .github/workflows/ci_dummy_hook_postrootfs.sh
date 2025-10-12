@@ -9,23 +9,6 @@ else
 fi
 sed -i "s/^ID=.*/ID=fedora/" /usr/lib/os-release
 
-# Install Anaconda, Webui if >= F42
-if [[ "$ID_LIKE" =~ rhel ]]; then
-    dnf copr enable -y jreilly1821/anaconda-webui
-    dnf install -y anaconda-webui anaconda
-    dnf install -y anaconda-live
-    HIDE_SPOKE="1"
-else
-    dnf install -y anaconda-live libblockdev-{btrfs,lvm,dm}
-    if [[ "$(rpm -E %fedora)" -ge 42 ]]; then
-        # Needed for Anaconda Web UI
-        mkdir -p /var/lib/rpm-state
-        dnf install -y anaconda-webui
-    else
-        HIDE_SPOKE="1"
-    fi
-fi
-
 if [[ "${HIDE_SPOKE:-}" ]]; then
     # Hide Root Spoke
     cat <<EOF >>/etc/anaconda/conf.d/anaconda.conf
