@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [amd64, arm64]
+        platform: [amd64]
         image:
           # cool images list :)
           - ghcr.io/micro856/netc-image:latest
