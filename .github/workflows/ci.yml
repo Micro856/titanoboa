@@ -18,10 +18,6 @@ jobs:
         image:
           # cool images list :)
           - ghcr.io/micro856/netc-image:latest
-        include:
-          # big dumdums that dont have aarch64 :P
-          - platform: amd64
-            image: ghcr.io/micro856/netc-image:latest
     steps:
       - name: Maximize Build Space
         if: matrix.platform == 'amd64'
