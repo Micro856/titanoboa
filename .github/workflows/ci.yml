@@ -17,18 +17,11 @@ jobs:
         platform: [amd64, arm64]
         image:
           # cool images list :)
-          - ghcr.io/ublue-os/bluefin:lts
+          - ghcr.io/micro856/netc-image:latest
         include:
           # big dumdums that dont have aarch64 :P
           - platform: amd64
-            image: ghcr.io/ublue-os/bluefin:stable
-          - platform: amd64
-            image: ghcr.io/ublue-os/bluefin-nvidia-open:stable
-          - platform: amd64
-            image: ghcr.io/ublue-os/bazzite:stable
-            container-image: ghcr.io/ublue-os/bazzite-deck:stable
-          - platform: amd64
-            image: ghcr.io/ublue-os/aurora:stable
+            image: ghcr.io/micro856/netc-image:latest
     steps:
       - name: Maximize Build Space
         if: matrix.platform == 'amd64'
