@@ -156,11 +156,11 @@ initramfs:
     {{ chroot_function }}
     set -euo pipefail
     CMD='set -xeuo pipefail
-    pacman -Sy --noconfirm dracut
-    INSTALLED_KERNEL=$(basename "$(find "/usr/lib/modules" -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
+    apt install -y dracut-live
+    INSTALLED_KERNEL="(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p $(realpath /root)
     export DRACUT_NO_XATTR=1
-    dracut --zstd --reproducible --no-hostonly --kver "$INSTALLED_KERNEL" --add "dmsquash-live dmsquash-live-autooverlay" --force /app/{{ workdir }}/initramfs.img |& grep -v -e "Operation not supported"'
+    dracut --force --no-hostonly --reproducible --zstd --verbose --kver "INSTALLED_KERNEL" /app/{{ workdir }}/initramfs.img |& grep -v -e "Operation not supported"'
     chroot "$CMD"
 
 # Embed the container
@@ -171,9 +171,9 @@ rootfs-include-container container_image=default_image image=default_image:
     set -euo pipefail
     CMD="set -xeuo pipefail
     mkdir -p /var/lib/containers/storage
-    pacman -Sy --noconfirm podman
+    apt install -y podman
     podman pull {{ container_image || image }}
-    pacman -Sy --noconfirm fuse-overlayfs"
+    apt install -y fuse-overlayfs"
     chroot "$CMD"
 
 # Install Flatpaks into the live system
@@ -184,7 +184,7 @@ rootfs-include-flatpaks FLATPAKS_FILE="src/flatpaks.example.txt":
     {{ chroot_function }}
     CMD='set -xeuo pipefail
     mkdir -p /var/lib/flatpak
-    pacman -S --noconfirm flatpak
+    apt install -y flatpak
 
     # Get Flatpaks
     flatpak remote-add --if-not-exists flathub "https://dl.flathub.org/repo/flathub.flatpakrepo"
@@ -240,7 +240,7 @@ rootfs-install-livesys-scripts livesys="1":
 
     # Enable services
     systemctl enable livesys.service livesys-late.service
-    systemctl enable gdm
+    #systemctl enable gdm
 
     # Set default time zone to prevent oddities with KDE clock
     echo "C /var/lib/livesys/livesys-session-extra 0755 root root - /usr/share/factory/var/lib/livesys/livesys-session-extra" > \
@@ -276,10 +276,8 @@ rootfs-clean-sysroot:
     set -euo pipefail
     CMD='set -xeuo pipefail
     if [[ -d /app ]]; then
-        rm -rf /sysroot /ostree
-        pacman -Sc --noconfirm
-        pacman -Scc --noconfirm
-        rm -rf /var/cache/pacman/pkg/*
+        apt autoremove -y
+        apt clean -y
     fi'
     chroot "$CMD"
 
@@ -392,7 +390,7 @@ iso:
     else
         {{ if `systemd-detect-virt -c || true` != 'none' { "echo '" + style('error') + "ERROR[iso]" + NORMAL + ": Cannot run in nested containers'; exit 1" } else { '' } }}
         {{ builder_function }}
-        CMD="pacman -Sy --noconfirm grub libisoburn shim dosfstools ; $CMD"
+        CMD="apt install -y grub2 shim-signed dosfstools xorriso {{ if arch == "x86_64" { 'grub-efi-amd64' } else if arch == "aarch64" { 'grub-efi-arm64' } else { '' } }} ; $CMD"
         builder "$CMD" "/app/{{ isoroot }}" "/app/{{ workdir }}"
     fi
 
