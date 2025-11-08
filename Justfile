@@ -156,7 +156,7 @@ initramfs:
     {{ chroot_function }}
     set -euo pipefail
     CMD='set -xeuo pipefail
-    apt install -y dracut-live
+    DEBIAN_FRONTEND=noninteractive apt install -y dracut-live
     INSTALLED_KERNEL="(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p $(realpath /root)
     export DRACUT_NO_XATTR=1
@@ -171,9 +171,9 @@ rootfs-include-container container_image=default_image image=default_image:
     set -euo pipefail
     CMD="set -xeuo pipefail
     mkdir -p /var/lib/containers/storage
-    apt install -y podman
+    DEBIAN_FRONTEND=noninteractive apt install -y podman skopeo
     podman pull {{ container_image || image }}
-    apt install -y fuse-overlayfs"
+    DEBIAN_FRONTEND=noninteractive apt install -y fuse-overlayfs"
     chroot "$CMD"
 
 # Install Flatpaks into the live system
@@ -184,7 +184,7 @@ rootfs-include-flatpaks FLATPAKS_FILE="src/flatpaks.example.txt":
     {{ chroot_function }}
     CMD='set -xeuo pipefail
     mkdir -p /var/lib/flatpak
-    apt install -y flatpak
+    DEBIAN_FRONTEND=noninteractive apt install -y flatpak
 
     # Get Flatpaks
     flatpak remote-add --if-not-exists flathub "https://dl.flathub.org/repo/flathub.flatpakrepo"
@@ -276,8 +276,8 @@ rootfs-clean-sysroot:
     set -euo pipefail
     CMD='set -xeuo pipefail
     if [[ -d /app ]]; then
-        apt autoremove -y
-        apt clean -y
+        DEBIAN_FRONTEND=noninteractive apt autoremove -y
+        DEBIAN_FRONTEND=noninteractive apt clean -y
     fi'
     chroot "$CMD"
 
@@ -390,7 +390,7 @@ iso:
     else
         {{ if `systemd-detect-virt -c || true` != 'none' { "echo '" + style('error') + "ERROR[iso]" + NORMAL + ": Cannot run in nested containers'; exit 1" } else { '' } }}
         {{ builder_function }}
-        CMD="apt install -y grub2 shim-signed dosfstools xorriso {{ if arch == "x86_64" { 'grub-efi-amd64' } else if arch == "aarch64" { 'grub-efi-arm64' } else { '' } }} ; $CMD"
+        CMD="DEBIAN_FRONTEND=noninteractive apt install -y grub2 shim-signed dosfstools xorriso {{ if arch == "x86_64" { 'grub-efi-amd64' } else if arch == "aarch64" { 'grub-efi-arm64' } else { '' } }} ; $CMD"
         builder "$CMD" "/app/{{ isoroot }}" "/app/{{ workdir }}"
     fi
 
