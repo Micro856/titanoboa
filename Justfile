@@ -3,7 +3,7 @@ PODMAN := which("podman") || require("podman-remote")
 workdir := env("TITANOBOA_WORKDIR", "work")
 isoroot := env("TITANOBOA_ISO_ROOT", "work/iso-root")
 rootfs := workdir/"rootfs"
-default_image := "ghcr.io/ublue-os/bluefin:lts"
+default_image := "ghcr.io/horizonlinux/debian-bootc-test:latest"
 arch := arch()
 ### BUILDER CONFIGURATION ###
 # Distribution to use for the builder container (for tools and dependencies)
