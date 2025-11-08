@@ -173,7 +173,7 @@ rootfs-include-container container_image=default_image image=default_image:
     mkdir -p /var/lib/containers/storage
     DEBIAN_FRONTEND=noninteractive apt install -y podman skopeo
     podman pull {{ container_image || image }}
-    DEBIAN_FRONTEND=noninteractive apt install -y fuse-overlayfs"
+    DEBIAN_FRONTEND=noninteractive apt install -y fuse-overlayfs
     chroot "$CMD"
 
 # Install Flatpaks into the live system
