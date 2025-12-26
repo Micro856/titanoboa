@@ -156,7 +156,7 @@ initramfs:
     {{ chroot_function }}
     set -euo pipefail
     CMD='set -xeuo pipefail
-    DEBIAN_FRONTEND=noninteractive apt install -y dracut-live
+    DEBIAN_FRONTEND=noninteractive apt install -y dracut-core dracut
     INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p $(realpath /root)
     export DRACUT_NO_XATTR=1
@@ -240,7 +240,6 @@ rootfs-install-livesys-scripts livesys="1":
 
     # Enable services
     systemctl enable livesys.service livesys-late.service
-    #systemctl enable gdm
 
     # Set default time zone to prevent oddities with KDE clock
     echo "C /var/lib/livesys/livesys-session-extra 0755 root root - /usr/share/factory/var/lib/livesys/livesys-session-extra" > \
