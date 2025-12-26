@@ -160,7 +160,7 @@ initramfs:
     INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p $(realpath /root)
     export DRACUT_NO_XATTR=1
-    dracut --force --no-hostonly --reproducible --zstd --add "dmsquash-live dmsquash-live-autooverlay" --verbose --kver "$INSTALLED_KERNEL" /app/{{ workdir }}/initramfs.img |& grep -v -e "Operation not supported"'
+    dracut --force --no-hostonly --reproducible --zstd --verbose --kver "$INSTALLED_KERNEL" /app/{{ workdir }}/initramfs.img |& grep -v -e "Operation not supported"'
     chroot "$CMD"
 
 # Embed the container
