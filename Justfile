@@ -156,6 +156,7 @@ initramfs:
     {{ chroot_function }}
     set -euo pipefail
     CMD='set -xeuo pipefail
+    DEBIAN_FRONTEND=noninteractive apt update -y
     DEBIAN_FRONTEND=noninteractive apt install -y dracut-core dracut
     INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p $(realpath /root)
@@ -171,6 +172,7 @@ rootfs-include-container container_image=default_image image=default_image:
     set -euo pipefail
     CMD="set -xeuo pipefail
     mkdir -p /var/lib/containers/storage
+    DEBIAN_FRONTEND=noninteractive apt update -y
     DEBIAN_FRONTEND=noninteractive apt install -y podman skopeo
     podman pull {{ container_image || image }}
     DEBIAN_FRONTEND=noninteractive apt install -y fuse-overlayfs"
@@ -184,6 +186,7 @@ rootfs-include-flatpaks FLATPAKS_FILE="src/flatpaks.example.txt":
     {{ chroot_function }}
     CMD='set -xeuo pipefail
     mkdir -p /var/lib/flatpak
+    DEBIAN_FRONTEND=noninteractive apt update -y
     DEBIAN_FRONTEND=noninteractive apt install -y flatpak
 
     # Get Flatpaks
