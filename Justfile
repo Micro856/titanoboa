@@ -156,6 +156,9 @@ initramfs:
     {{ chroot_function }}
     set -euo pipefail
     CMD='set -xeuo pipefail
+    rm -rf /var/lib/apt/lists
+    mkdir -p /var/lib/apt/lists/partial
+    chmod 755 /var/lib/apt/lists/partial
     DEBIAN_FRONTEND=noninteractive apt update -y
     DEBIAN_FRONTEND=noninteractive apt install -y dracut-core dracut
     INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
@@ -172,6 +175,9 @@ rootfs-include-container container_image=default_image image=default_image:
     set -euo pipefail
     CMD="set -xeuo pipefail
     mkdir -p /var/lib/containers/storage
+    rm -rf /var/lib/apt/lists
+    mkdir -p /var/lib/apt/lists/partial
+    chmod 755 /var/lib/apt/lists/partial
     DEBIAN_FRONTEND=noninteractive apt update -y
     DEBIAN_FRONTEND=noninteractive apt install -y podman skopeo
     podman pull {{ container_image || image }}
