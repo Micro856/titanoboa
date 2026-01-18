@@ -14,10 +14,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [amd64]
+        platform: [amd64, arm64]
         image:
           # cool images list :)
-          - ghcr.io/horizonlinux/horizon-debian-test:latest
+          - ghcr.io/horizonlinux/atom:latest
     steps:
       # Give us back the precious disk space, sadly longer build times
       - name: Maximize Build Space
