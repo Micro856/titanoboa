@@ -160,10 +160,8 @@ initramfs:
     mkdir -p /var/lib/apt/lists/partial
     chmod 755 /var/lib/apt/lists/partial
     rm -rf /var/lib/dpkg/lock-frontend
-    mkdir -p /var/lib/dpkg/lock-frontend
-    chmod 755 /var/lib/dpkg/lock-frontend
     DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive apt install -y dracut-core dracut
+    DEBIAN_FRONTEND=noninteractive sudo apt install -y dracut-core dracut
     INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p $(realpath /root)
     export DRACUT_NO_XATTR=1
@@ -182,10 +180,8 @@ rootfs-include-container container_image=default_image image=default_image:
     mkdir -p /var/lib/apt/lists/partial
     chmod 755 /var/lib/apt/lists/partial
     rm -rf /var/lib/dpkg/lock-frontend
-    mkdir -p /var/lib/dpkg/lock-frontend
-    chmod 755 /var/lib/dpkg/lock-frontend
     DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive apt install -y podman skopeo
+    DEBIAN_FRONTEND=noninteractive sudo apt install -y podman skopeo
     podman pull {{ container_image || image }}
     DEBIAN_FRONTEND=noninteractive apt install -y fuse-overlayfs"
     chroot "$CMD"
