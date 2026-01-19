@@ -156,10 +156,6 @@ initramfs:
     {{ chroot_function }}
     set -euo pipefail
     CMD='set -xeuo pipefail
-    rm -rf /var/lib/apt/lists
-    mkdir -p /var/lib/apt/lists/partial
-    chmod 755 /var/lib/apt/lists/partial
-    rm -rf /var/lib/dpkg/lock-frontend
     DEBIAN_FRONTEND=noninteractive apt update -y
     DEBIAN_FRONTEND=noninteractive sudo apt install -y dracut-core dracut
     INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
