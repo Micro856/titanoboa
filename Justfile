@@ -188,14 +188,14 @@ rootfs-include-flatpaks FLATPAKS_FILE="src/flatpaks.example.txt":
     CMD='set -xeuo pipefail
     mkdir -p /var/lib/flatpak
     systemd-tmpfiles --create
-    DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y flatpak
+    # DEBIAN_FRONTEND=noninteractive apt update -y
+    # DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y flatpak
 
     # Get Flatpaks
     flatpak remote-add --if-not-exists flathub "https://dl.flathub.org/repo/flathub.flatpakrepo"
-    grep -v "#.*" /flatpak-list/$(basename {{ FLATPAKS_FILE }}) | sort --reverse | xargs "-i{}" -d "\n" sh -c "flatpak remote-info --arch={{ arch }} --system flathub {} &>/dev/null && flatpak install --noninteractive -y {}" || true'
-    set -euo pipefail
-    chroot "$CMD" --volume "$(realpath "$(dirname {{ FLATPAKS_FILE }})")":/flatpak-list
+    # grep -v "#.*" /flatpak-list/$(basename {{ FLATPAKS_FILE }}) | sort --reverse | xargs "-i{}" -d "\n" sh -c "flatpak remote-info --arch={{ arch }} --system flathub {} &>/dev/null && flatpak install --noninteractive -y {}" || true'
+    # set -euo pipefail
+    # chroot "$CMD" --volume "$(realpath "$(dirname {{ FLATPAKS_FILE }})")":/flatpak-list
 
 # Install polkit rules
 rootfs-include-polkit polkit="1":
