@@ -158,7 +158,7 @@ initramfs:
     CMD='set -xeuo pipefail
     systemd-tmpfiles --create
     DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive sudo apt install --force-confold  --no-install-recommends -y dracut-core dracut
+    DEBIAN_FRONTEND=noninteractive sudo apt install --force-confold --no-install-recommends -y dracut-core dracut
     INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p $(realpath /root)
     export DRACUT_NO_XATTR=1
