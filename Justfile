@@ -191,7 +191,7 @@ rootfs-include-flatpaks FLATPAKS_FILE="src/flatpaks.example.txt":
     DEBIAN_FRONTEND=noninteractive apt update -y
     DEBIAN_FRONTEND=noninteractive apt install -o Dpkg::Options::="--force-confold" --no-install-recommends -y flatpak
 
-    Get Flatpaks
+    # Get Flatpaks
     flatpak remote-add --if-not-exists flathub "https://dl.flathub.org/repo/flathub.flatpakrepo"
     grep -v "#.*" /flatpak-list/$(basename {{ FLATPAKS_FILE }}) | sort --reverse | xargs "-i{}" -d "\n" sh -c "flatpak remote-info --arch={{ arch }} --system flathub {} &>/dev/null && flatpak install --noninteractive -y {}" || true'
     set -euo pipefail
