@@ -158,7 +158,7 @@ initramfs:
     CMD='set -xeuo pipefail
     systemd-tmpfiles --create
     DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive sudo apt install --force-confold --no-install-recommends -y dracut-core dracut
+    DEBIAN_FRONTEND=noninteractive sudo apt install -o Dpkg::Options::="--force-confold" --no-install-recommends -y dracut-core dracut
     INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p $(realpath /root)
     export DRACUT_NO_XATTR=1
@@ -174,9 +174,9 @@ rootfs-include-container container_image=default_image image=default_image:
     CMD="set -xeuo pipefail
     systemd-tmpfiles --create
     DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive sudo apt install --force-confold  --no-install-recommends -y podman skopeo
+    DEBIAN_FRONTEND=noninteractive sudo apt install -o Dpkg::Options::="--force-confold"  --no-install-recommends -y podman skopeo
     podman pull {{ container_image || image }}
-    DEBIAN_FRONTEND=noninteractive apt install --force-confold --no-install-recommends -y fuse-overlayfs"
+    DEBIAN_FRONTEND=noninteractive apt install -o Dpkg::Options::="--force-confold" --no-install-recommends -y fuse-overlayfs"
     chroot "$CMD"
 
 # Install Flatpaks into the live system
@@ -189,7 +189,7 @@ rootfs-include-flatpaks FLATPAKS_FILE="src/flatpaks.example.txt":
     mkdir -p /var/lib/flatpak
     systemd-tmpfiles --create
     DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive apt install --force-confold --no-install-recommends -y flatpak
+    DEBIAN_FRONTEND=noninteractive apt install -o Dpkg::Options::="--force-confold" --no-install-recommends -y flatpak
 
     Get Flatpaks
     flatpak remote-add --if-not-exists flathub "https://dl.flathub.org/repo/flathub.flatpakrepo"
@@ -214,7 +214,7 @@ rootfs-install-livesys-scripts livesys="1":
     set -euo pipefail
     CMD='set -xeuo pipefail
     DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive apt install --force-confold --no-install-recommends -y curl
+    DEBIAN_FRONTEND=noninteractive apt install -o Dpkg::Options::="--force-confold" --no-install-recommends -y curl
     curl https://pagure.io/livesys-scripts/archive/0.8.0/livesys-scripts-0.8.0.tar.gz --output /tmp/livesys.tar.gz
     cd /tmp
     tar -xf livesys.tar.gz
