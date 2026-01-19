@@ -158,7 +158,7 @@ initramfs:
     CMD='set -xeuo pipefail
     systemd-tmpfiles --create
     DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive sudo apt install -y dracut-core dracut
+    DEBIAN_FRONTEND=noninteractive sudo apt install --no-install-recommends -y dracut-core dracut
     INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p $(realpath /root)
     export DRACUT_NO_XATTR=1
@@ -174,9 +174,9 @@ rootfs-include-container container_image=default_image image=default_image:
     CMD="set -xeuo pipefail
     systemd-tmpfiles --create
     DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive sudo apt install -y podman skopeo
+    DEBIAN_FRONTEND=noninteractive sudo apt install --no-install-recommends -y podman skopeo
     podman pull {{ container_image || image }}
-    DEBIAN_FRONTEND=noninteractive apt install -y fuse-overlayfs"
+    DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y fuse-overlayfs"
     chroot "$CMD"
 
 # Install Flatpaks into the live system
@@ -189,7 +189,7 @@ rootfs-include-flatpaks FLATPAKS_FILE="src/flatpaks.example.txt":
     mkdir -p /var/lib/flatpak
     systemd-tmpfiles --create
     DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive apt install -y flatpak
+    DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y flatpak
 
     # Get Flatpaks
     flatpak remote-add --if-not-exists flathub "https://dl.flathub.org/repo/flathub.flatpakrepo"
@@ -395,7 +395,7 @@ iso:
     else
         {{ if `systemd-detect-virt -c || true` != 'none' { "echo '" + style('error') + "ERROR[iso]" + NORMAL + ": Cannot run in nested containers'; exit 1" } else { '' } }}
         {{ builder_function }}
-        CMD="systemd-tmpfiles --create && DEBIAN_FRONTEND=noninteractive apt install -y grub2 shim-signed dosfstools xorriso {{ if arch == "x86_64" { 'grub-efi-amd64' } else if arch == "aarch64" { 'grub-efi-arm64' } else { '' } }} ; $CMD"
+        CMD="systemd-tmpfiles --create && DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y grub2 shim-signed dosfstools xorriso {{ if arch == "x86_64" { 'grub-efi-amd64' } else if arch == "aarch64" { 'grub-efi-arm64' } else { '' } }} ; $CMD"
         builder "$CMD" "/app/{{ isoroot }}" "/app/{{ workdir }}"
     fi
 
