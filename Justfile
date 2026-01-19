@@ -156,7 +156,7 @@ initramfs:
     {{ chroot_function }}
     set -euo pipefail
     CMD='set -xeuo pipefail
-    systemd-tmpfiles
+    systemd-tmpfiles --create
     DEBIAN_FRONTEND=noninteractive apt update -y
     DEBIAN_FRONTEND=noninteractive sudo apt install -y dracut-core dracut
     INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
@@ -172,7 +172,7 @@ rootfs-include-container container_image=default_image image=default_image:
     {{ chroot_function }}
     set -euo pipefail
     CMD="set -xeuo pipefail
-    systemd-tmpfiles
+    systemd-tmpfiles --create
     DEBIAN_FRONTEND=noninteractive apt update -y
     DEBIAN_FRONTEND=noninteractive sudo apt install -y podman skopeo
     podman pull {{ container_image || image }}
@@ -187,7 +187,7 @@ rootfs-include-flatpaks FLATPAKS_FILE="src/flatpaks.example.txt":
     {{ chroot_function }}
     CMD='set -xeuo pipefail
     mkdir -p /var/lib/flatpak
-    systemd-tmpfiles
+    systemd-tmpfiles --create
     DEBIAN_FRONTEND=noninteractive apt update -y
     DEBIAN_FRONTEND=noninteractive apt install -y flatpak
 
@@ -280,7 +280,7 @@ rootfs-clean-sysroot:
     set -euo pipefail
     CMD='set -xeuo pipefail
     if [[ -d /app ]]; then
-        systemd-tmpfiles
+        systemd-tmpfiles --create
         DEBIAN_FRONTEND=noninteractive apt autoremove -y
         DEBIAN_FRONTEND=noninteractive apt clean -y
     fi'
@@ -395,7 +395,7 @@ iso:
     else
         {{ if `systemd-detect-virt -c || true` != 'none' { "echo '" + style('error') + "ERROR[iso]" + NORMAL + ": Cannot run in nested containers'; exit 1" } else { '' } }}
         {{ builder_function }}
-        CMD="systemd-tmpfiles && DEBIAN_FRONTEND=noninteractive apt install -y grub2 shim-signed dosfstools xorriso {{ if arch == "x86_64" { 'grub-efi-amd64' } else if arch == "aarch64" { 'grub-efi-arm64' } else { '' } }} ; $CMD"
+        CMD="systemd-tmpfiles --create && DEBIAN_FRONTEND=noninteractive apt install -y grub2 shim-signed dosfstools xorriso {{ if arch == "x86_64" { 'grub-efi-amd64' } else if arch == "aarch64" { 'grub-efi-arm64' } else { '' } }} ; $CMD"
         builder "$CMD" "/app/{{ isoroot }}" "/app/{{ workdir }}"
     fi
 
