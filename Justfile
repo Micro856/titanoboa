@@ -191,8 +191,7 @@ rootfs-install-livesys-scripts livesys="1":
     {{ chroot_function }}
     set -euo pipefail
     CMD='set -xeuo pipefail
-    DEBIAN_FRONTEND=noninteractive apt update -y
-    DEBIAN_FRONTEND=noninteractive apt install -o Dpkg::Options::="--force-confold" --no-install-recommends -y curl
+    zypper install -y curl
     curl https://pagure.io/livesys-scripts/archive/0.8.0/livesys-scripts-0.8.0.tar.gz --output /tmp/livesys.tar.gz
     cd /tmp
     tar -xf livesys.tar.gz
