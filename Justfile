@@ -156,11 +156,11 @@ initramfs:
     {{ chroot_function }}
     set -euo pipefail
     CMD='set -xeuo pipefail
-    dnf install -y dracut-live
-    INSTALLED_KERNEL=$(rpm -q kernel-core --queryformat "%{evr}.%{arch}" | tail -n 1)
+    zypper install -y dracut dracut-extra
+    INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p $(realpath /root)
     export DRACUT_NO_XATTR=1
-    dracut --zstd --reproducible --no-hostonly --kver "$INSTALLED_KERNEL" --add "dmsquash-live dmsquash-live-autooverlay" --force /app/{{ workdir }}/initramfs.img |& grep -v -e "Operation not supported"'
+    dracut --force --kver "$KERNEL_VERSION" /app/{{ workdir }}/initramfs.img |& grep -v -e "Operation not supported"'
     chroot "$CMD"
 
 # Embed the container
@@ -172,7 +172,7 @@ rootfs-include-container container_image=default_image image=default_image:
     CMD="set -xeuo pipefail
     mkdir -p /var/lib/containers/storage
     podman pull {{ container_image || image }}
-    dnf install -y fuse-overlayfs"
+    zypper install -y fuse-overlayfs"
     chroot "$CMD"
 
 # Install polkit rules
@@ -191,14 +191,39 @@ rootfs-install-livesys-scripts livesys="1":
     {{ chroot_function }}
     set -euo pipefail
     CMD='set -xeuo pipefail
-    dnf="$({ which dnf5 || which dnf; } 2>/dev/null)"
-    $dnf install -y livesys-scripts
+    DEBIAN_FRONTEND=noninteractive apt update -y
+    DEBIAN_FRONTEND=noninteractive apt install -o Dpkg::Options::="--force-confold" --no-install-recommends -y curl
+    curl https://pagure.io/livesys-scripts/archive/0.8.0/livesys-scripts-0.8.0.tar.gz --output /tmp/livesys.tar.gz
+    cd /tmp
+    tar -xf livesys.tar.gz
+    cd livesys-scripts-0.8.0
+    install -D -m 0644 /tmp/livesys-scripts-0.8.0/etc/sysconfig/livesys -t /etc/sysconfig
+    install -D -m 0644 /tmp/livesys-scripts-0.8.0/libexec/livesys/functions -t /usr/libexec/livesys
+    install -D -m 0644 /tmp/livesys-scripts-0.8.0/libexec/livesys/livesys-late -t /usr/libexec/livesys
+    install -D -m 0644 /tmp/livesys-scripts-0.8.0/libexec/livesys/livesys-main -t /usr/libexec/livesys
+    install -D -m 0644 /tmp/livesys-scripts-0.8.0/libexec/livesys/sessions.d/livesys-* -t /usr/libexec/livesys/sessions.d/
+    install -D -m 0644 /tmp/livesys-scripts-0.8.0/systemd/*.service -t /usr/lib/systemd/system
+    cd /
+    
 
     # Determine desktop environment. Must match one of /usr/libexec/livesys/sessions.d/livesys-{desktop_env}
+    desktop_env=""
+    _session_file="$(find /usr/share/wayland-sessions/ /usr/share/xsessions \
+        -maxdepth 1 -type f -not -name '*gamescope*.desktop' -and -name '*.desktop' -printf '%P' -quit)"
+    case $_session_file in
+        budgie*) desktop_env=budgie ;;
+        cosmic*) desktop_env=cosmic ;;
+        gnome*)  desktop_env=gnome  ;;
+        plasma*) desktop_env=kde    ;;
+        sway*)   desktop_env=sway   ;;
+        xfce*)   desktop_env=xfce   ;;
+        *) echo "\
+           {{ style('error') }}ERROR[rootfs-install-livesys-scripts]{{ NORMAL }}\
+           : No Livesys Environment Found"; exit 1 ;;
+    esac && unset -v _session_file
+    sed -i "s/^livesys_session=.*/livesys_session=${desktop_env}/" /etc/sysconfig/livesys
+
     # Enable services
-    mkdir -p /etc/systemd/system/getty@tty1.service.d/
-    echo -e "[Service]\nExecStart=\nExecStart=-/usr/sbin/agetty --autologin root --noclear %I $TERM" > '/etc/systemd/system/getty@tty1.service.d/autologin.conf'
-    dmesg -n 1
     systemctl enable livesys.service livesys-late.service
 
     # Set default time zone to prevent oddities with KDE clock
@@ -236,8 +261,7 @@ rootfs-clean-sysroot:
     CMD='set -xeuo pipefail
     if [[ -d /app ]]; then
         rm -rf /sysroot /ostree
-        dnf autoremove -y
-        dnf clean all -y
+        zypper clean -a
     fi'
     chroot "$CMD"
 
