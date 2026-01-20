@@ -308,7 +308,7 @@ iso-organize extra_kargs: && (process-grub-template extra_kargs)
     set -xeuo pipefail
     KERNEL_VERSION=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p {{ isoroot }}/boot/grub {{ isoroot }}/LiveOS
-    cp {{ rootfs }}/usr/lib/modules/$KERNEL_VERSION/vmlinuz {{ isoroot }}/boot
+    cp {{ rootfs }}/usr/lib/modules/*/vmlinuz {{ isoroot }}/boot
     cp {{ workdir }}/initramfs.img {{ isoroot }}/boot
     # Hardcoded on the dmsquash-live source code unless specified otherwise via kargs
     # https://github.com/dracut-ng/dracut-ng/blob/0ffc61e536d1193cb837917d6a283dd6094cb06d/modules.d/90dmsquash-live/dmsquash-live-root.sh#L23
