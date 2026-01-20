@@ -170,6 +170,7 @@ rootfs-include-container container_image=default_image image=default_image:
     {{ chroot_function }}
     set -euo pipefail
     CMD="set -xeuo pipefail
+    zypper install -y podman skopeo
     mkdir -p /var/lib/containers/storage
     podman pull {{ container_image || image }}
     zypper install -y fuse-overlayfs"
