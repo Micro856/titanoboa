@@ -17,7 +17,8 @@ jobs:
         platform: ["amd64", "arm64"]
         image:
           # cool images list :)
-          - ghcr.io/micro856/netc-image:latest
+          # - ghcr.io/micro856/netc-image:latest
+          - quay.io/fedora/fedora-bootc:latest
     steps:
       - name: Maximize Build Space
         if: matrix.platform == 'amd64'
