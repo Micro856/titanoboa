@@ -203,24 +203,23 @@ rootfs-install-livesys-scripts livesys="1":
     install -D -m 0644 /tmp/livesys-scripts-0.8.0/libexec/livesys/sessions.d/livesys-* -t /usr/libexec/livesys/sessions.d/
     install -D -m 0644 /tmp/livesys-scripts-0.8.0/systemd/*.service -t /usr/lib/systemd/system
     cd /
-    
 
     # Determine desktop environment. Must match one of /usr/libexec/livesys/sessions.d/livesys-{desktop_env}
-    desktop_env=""
-    _session_file="$(find /usr/share/wayland-sessions/ /usr/share/xsessions \
-        -maxdepth 1 -type f -not -name '*gamescope*.desktop' -and -name '*.desktop' -printf '%P' -quit)"
-    case $_session_file in
-        budgie*) desktop_env=budgie ;;
-        cosmic*) desktop_env=cosmic ;;
-        gnome*)  desktop_env=gnome  ;;
-        plasma*) desktop_env=kde    ;;
-        sway*)   desktop_env=sway   ;;
-        xfce*)   desktop_env=xfce   ;;
-        *) echo "\
-           {{ style('error') }}ERROR[rootfs-install-livesys-scripts]{{ NORMAL }}\
-           : No Livesys Environment Found"; exit 1 ;;
-    esac && unset -v _session_file
-    sed -i "s/^livesys_session=.*/livesys_session=${desktop_env}/" /etc/sysconfig/livesys
+    #desktop_env=""
+    #_session_file="$(find /usr/share/wayland-sessions/ /usr/share/xsessions \
+    #    -maxdepth 1 -type f -not -name '*gamescope*.desktop' -and -name '*.desktop' -printf '%P' -quit)"
+    #case $_session_file in
+    #    budgie*) desktop_env=budgie ;;
+    #    cosmic*) desktop_env=cosmic ;;
+    #    gnome*)  desktop_env=gnome  ;;
+    #    plasma*) desktop_env=kde    ;;
+    #    sway*)   desktop_env=sway   ;;
+    #    xfce*)   desktop_env=xfce   ;;
+    #    *) echo "\
+    #       {{ style('error') }}ERROR[rootfs-install-livesys-scripts]{{ NORMAL }}\
+    #       : No Livesys Environment Found"; exit 1 ;;
+    #esac && unset -v _session_file
+    # sed -i "s/^livesys_session=.*/livesys_session=${desktop_env}/" /etc/sysconfig/livesys
 
     # Enable services
     systemctl enable livesys.service livesys-late.service
