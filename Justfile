@@ -157,7 +157,7 @@ initramfs:
     set -euo pipefail
     CMD='set -xeuo pipefail
     zypper install -y dracut dracut-extra
-    INSTALLED_KERNEL=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
+    KERNEL_VERSION=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p $(realpath /root)
     export DRACUT_NO_XATTR=1
     dracut --force --kver "$KERNEL_VERSION" /app/{{ workdir }}/initramfs.img |& grep -v -e "Operation not supported"'
