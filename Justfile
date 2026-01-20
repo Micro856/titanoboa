@@ -101,7 +101,7 @@ function iso_dependencies(){
         shim
         xorriso
     )
-    if [[ "' + arch + '" == "x86_64" ]]; then
+     [[ "' + arch + '" == "x86_64" ]]; then
         RPMS+=(
             grub2-efi-x64
             grub2-efi-x64-cdboot
@@ -308,7 +308,7 @@ iso-organize extra_kargs: && (process-grub-template extra_kargs)
     set -xeuo pipefail
     KERNEL_VERSION=$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")
     mkdir -p {{ isoroot }}/boot/grub {{ isoroot }}/LiveOS
-    cp {{ rootfs }}/usr/lib/modules/*/vmlinuz {{ isoroot }}/boot
+    {{ if arch == "x86_64" { 'cp {{ rootfs }}/usr/lib/modules/*/vmlinuz {{ isoroot }}/boot' } else if arch == "aarch64" { 'cp {{ rootfs }}/usr/lib/modules/*/Image {{ isoroot }}/boot && ln -s {{ isoroot }}/boot/Image {{ isoroot }}/boot/vmlinuz' } else { '' } }};
     cp {{ workdir }}/initramfs.img {{ isoroot }}/boot
     # Hardcoded on the dmsquash-live source code unless specified otherwise via kargs
     # https://github.com/dracut-ng/dracut-ng/blob/0ffc61e536d1193cb837917d6a283dd6094cb06d/modules.d/90dmsquash-live/dmsquash-live-root.sh#L23
@@ -329,9 +329,9 @@ iso:
     # ARCH_SHORT needs to be uppercase
     ARCH_SHORT="$(echo {{ arch }} | sed 's/x86_64/x64/g' | sed 's/aarch64/aa64/g')"
     ARCH_32="$(echo {{ arch }} | sed 's/x86_64/ia32/g' | sed 's/aarch64/arm/g')"
-    if [[ "$(rpm -E %centos)" -ge 10 ]]; then
+     [[ "$(rpm -E %centos)" -ge 10 ]]; then
         cp -avf /boot/efi/EFI/centos/. $ISOROOT/EFI/BOOT
-    elif [[ "$(rpm -E %fedora)" -ge 41 ]]; then
+    el [[ "$(rpm -E %fedora)" -ge 41 ]]; then
         cp -avf /boot/efi/EFI/fedora/. $ISOROOT/EFI/BOOT
     fi
     cp -avf $ISOROOT/boot/grub/grub.cfg $ISOROOT/EFI/BOOT/BOOT.conf
@@ -362,8 +362,8 @@ iso:
     #cp -dRvf $ISOROOT/EFI/BOOT/. $EFI_BOOT_PART/EFI/BOOT
     #umount $EFI_BOOT_PART
 
-    ARCH_SPECIFIC=()
-    if [ "{{ arch }}" == "x86_64" ] ; then
+    ARCH_SPECIC=()
+     [ "{{ arch }}" == "x86_64" ] ; then
         ARCH_SPECIFIC=("--grub2-mbr" "/usr/lib/grub/i386-pc/boot_hybrid.img")
     fi
 
