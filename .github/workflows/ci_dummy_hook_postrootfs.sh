@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 zypper addrepo --non-interactive -y "https://download.opensuse.org/repositories/home:/Microwave:/anaconda/openSUSE_Tumbleweed/home:Microwave:anaconda.repo"
-zypper install install -y anaconda-core anaconda-dracut anaconda-gui anaconda-live rsync
+zypper install install -y anaconda-live MozillaFirefox
 
 if [[ "${HIDE_SPOKE:-}" ]]; then
     # Hide Root Spoke
@@ -45,6 +45,7 @@ hidden_spokes =
 	SubscriptionSpoke
 hidden_webui_pages =
     anaconda-screen-accounts
+	root-password
 
 [Localization]
 use_geolocation = False
