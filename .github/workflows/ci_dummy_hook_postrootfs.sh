@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-zypper addrepo --non-interactive -y "https://download.opensuse.org/repositories/home:/Microwave:/anaconda/openSUSE_Tumbleweed/home:Microwave:anaconda.repo"
+zypper addrepo "https://download.opensuse.org/repositories/home:/Microwave:/anaconda/openSUSE_Tumbleweed/home:Microwave:anaconda.repo"
+zypper refresh
 zypper install install -y anaconda-live MozillaFirefox
 
 if [[ "${HIDE_SPOKE:-}" ]]; then
